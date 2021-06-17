@@ -134,7 +134,7 @@ void LCD::Clear()
 	#endif
 }
 
-void LCD::MoveCursor(uint8_t x, uint8_t y)
+void LCD::MoveCursor(uint8_t y, uint8_t x)
 {
 	uint8_t Ad;
 	Ad=64*(y-1)+(x-1)+0x80; //

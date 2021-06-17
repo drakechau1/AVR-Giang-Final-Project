@@ -5,21 +5,25 @@
 * Author : duc
 */
 
-
-#define F_CPU 8000000UL
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 #include <avr/io.h>
 #include "Lib/LCD.h"
+#include "Lib/DHT11.h"
 
 int main(void)
 {
-	LCD lcd;	// Kh?i t?o LCD object
+	LCD lcd;	// Khoi tao LCD
 
 	lcd.Init();
 	lcd.Clear();
 
+	lcd.MoveCursor(1,5);
+	lcd.Print("Hello");
+
 	while (1)
 	{
+		
 	}
 }
 
