@@ -15,19 +15,22 @@
 #include <avr/sfr_defs.h>
 #include <util/delay.h>
 
-#define DHT_DDR DDRB
-#define DHT_PORT PORTB
-#define DHT_PIN PINB
+#define DHT_DDR DDRD
+#define DHT_PORT PORTD
+#define DHT_PIN PIND
+
 
 class DHT11
 {
-	private:
-	uint16_t Temperature, Humidity;
+private:
 	uint8_t DHT_INPUTPIN;
 	void Request();
 	void Response();
+	bool Checksum(uint8_t buffer[]);
 
-	public:
+public:
+	uint16_t Temperature, Humidity;
+
 	DHT11();
 	DHT11(uint8_t dht_inputPin);
 	~DHT11();

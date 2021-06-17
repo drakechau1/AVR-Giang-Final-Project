@@ -41,7 +41,8 @@ class LCD
 	~LCD() {return;}
 	void Init();
 	void Clear();
-	void MoveCursor(uint8_t y, uint8_t x);
+	void Home();
+	void SetCursor(uint8_t y, uint8_t x);
 	void PutChar(char ch);
 	void Print(char* str);
 };

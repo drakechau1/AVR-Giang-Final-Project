@@ -1,9 +1,9 @@
 /*
- * LCD.cpp
- *
- * Created: 6/17/2021 1:35:17 AM
- *  Author: duc
- */ 
+* LCD.cpp
+*
+* Created: 6/17/2021 1:35:17 AM
+*  Author: duc
+*/
 
 
 #include "LCD.h"
@@ -134,7 +134,19 @@ void LCD::Clear()
 	#endif
 }
 
-void LCD::MoveCursor(uint8_t y, uint8_t x)
+void LCD::Home()
+{
+	cbi(CTRL,RS); // the following data is COMMAND
+	#ifdef LCD8BIT
+	Write8Bit(0x02);
+	Wait();
+	#else
+	Write2Nib(0x02);
+	Wait();
+	#endif
+}
+
+void LCD::SetCursor(uint8_t y, uint8_t x)
 {
 	uint8_t Ad;
 	Ad=64*(y-1)+(x-1)+0x80; //
