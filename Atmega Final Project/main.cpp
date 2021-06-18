@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include "Lib/LCD.h"
 #include "Lib/DHT11.h"
+#include "Lib/MQ135.h"
 
 #define DHT_INPUTPIN 7
 
