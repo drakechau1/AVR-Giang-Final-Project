@@ -18,39 +18,38 @@
 #include "Lib/MQ135.h"
 
 #define DHT_INPUTPIN 7
+#define ADC_CHANNEL  0
+
 
 int main(void)
 {
-	LCD lcd;					// Khoi tao LCD
-	DHT11 dht11(DHT_INPUTPIN);	// Khoi tao DHT
+	LCD lcd;					// Create LCD
+	DHT11 dht11(DHT_INPUTPIN);	// Create DHT
+	MQ135 mq135(ADC_CHANNEL);	// Create MQ135
 	
 	uint8_t temperature, humidity;
+	int ppm;
 	char data[5];
 
+	// Init functions
 	lcd.Init();
-
+	mq135.Init();
+	
 	while (1)
 	{
 		lcd.Clear();
-		lcd.SetCursor(1,1);
-		lcd.Print("Temp:");
-		lcd.SetCursor(2,1);
-		lcd.Print("Humi:");
 		
-		dht11.Calculate();
-		temperature = dht11.GetTemperature();
-		humidity = dht11.GetHumidity();
+		lcd.SetCursor(1, 1);
+		lcd.Print("PPM:");
+		
+		//ppm = mq135.GetPPM();
+		ppm = mq135.GetPPM();
 		
 		
-		itoa(temperature, data, 10);
+		itoa(ppm, data, 10);
 		lcd.SetCursor(1, 6);
-		lcd.Print(data);
-		
-		itoa(humidity, data, 10);
-		lcd.SetCursor(2, 6);
 		lcd.Print(data);
 		
 		_delay_ms(1000);
 	}
 }
-
