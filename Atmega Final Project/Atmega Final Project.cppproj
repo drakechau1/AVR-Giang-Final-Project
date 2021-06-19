@@ -171,6 +171,12 @@
     <Compile Include="Lib\MQ135.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Lib\MQ2.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Lib\MQ2.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>
