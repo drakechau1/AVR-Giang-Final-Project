@@ -28,7 +28,7 @@ void MQ2::Init()
 	ADCSRA = 0x87;		/* Enable ADC, fr/128  */
 	ADMUX = 0x40;		/* Vref: Avcc, ADC channel: 0 */
 	
-	Ro = 10.0;
+	Ro = 6.69;
 	//Ro = MQCalibration();
 }
 
@@ -46,40 +46,33 @@ uint16_t MQ2::ReadADC()
 	return ADCW;						/* Return ADC value */
 }
 
-bool MQ2::CheckCalibration()
-{
-	if (Ro < 0.0)
-	return false;
-	return true;
-}
-
-float MQ2::MQResistanceCalculation(int raw_adc)
-{
-	return (float)(RL_VALUE * (1023.0 - raw_adc) / raw_adc);
+float MQ2::MQResistanceCalculation(uint16_t raw_adc)
+{	if (raw_adc == 0 || raw_adc == 1023)
+	return 0.0;
+	return ((float)(RL_VALUE * (1023.0 - (float)raw_adc) / (float)raw_adc));
 }
 
 float MQ2::MQRead()
 {
 	float rs = 0.0;	// rs: Resistance
 	for (int i = 0; i < READ_SAMPLE_TIMES; i++) {
-		rs += MQResistanceCalculation(ReadADC());
+		rs = rs + MQResistanceCalculation(ReadADC());
 		_delay_ms(READ_SAMPLE_INTERVAL);
 	}
-	return rs / ((float) READ_SAMPLE_TIMES);	// return the average
+	return (rs / ((float) READ_SAMPLE_TIMES));	// return the average
 }
 
 float MQ2::MQCalibration()
 {
 	float val = 0.0;
 	// take multiple samples
-	for (int i = 0; i < CALIBARAION_SAMPLE_TIMES; i++) {
-		val += MQResistanceCalculation(ReadADC());
+	for (uint8_t i = 0; i < CALIBARAION_SAMPLE_TIMES; i++) {
+		val = val + MQResistanceCalculation(ReadADC());
 		_delay_ms(CALIBRATION_SAMPLE_INTERVAL);
 	}
-
-	val = val / ((float) CALIBARAION_SAMPLE_TIMES);		// calculate the average value
-	val = val / RO_CLEAN_AIR_FACTOR;					// divided by RO_CLEAN_AIR_FACTOR yields the Ro according to the chart in the datasheet
-	return val;
+	val = val / ((float)CALIBARAION_SAMPLE_TIMES);		// calculate the average value
+	val = (val / (float)RO_CLEAN_AIR_FACTOR);
+	return val;	// divided by RO_CLEAN_AIR_FACTOR yields the Ro according to the chart in the datasheet
 }
 
 //
@@ -88,28 +81,31 @@ float MQ2::MQCalibration()
 // SmokeCurve = {2.3, 0.53, -0.44};
 // return pow(10.0, ((log(rs_ro_ratio) - pcurve[1]) / pcurve[2]) + pcurve[0]);
 
+void MQ2::Calculate()
+{
+	float rs_ro_ratio = MQRead() / Ro;
+	this->LPG = pow(10.0, ((log(rs_ro_ratio) - 0.21) / -0.47) + 2.3);
+	this->CO = pow(10.0, ((log(rs_ro_ratio) - 0.72) / -0.34) + 2.3);
+	this->Smoke = pow(10.0, ((log(rs_ro_ratio) - 0.53) / -0.44) + 2.3);
+}
+
 float MQ2::GetLPG()
 {
-	if (!CheckCalibration()) return 0.0;
-	float rs_ro_ratio = MQRead() / Ro;
-	return pow(10.0, ((log(rs_ro_ratio) - 0.21) / -0.47) + 2.3);
+	return this->LPG;
 }
 
 float MQ2::GetCO()
 {
-	if (!CheckCalibration()) return 0.0;
-	float rs_ro_ratio = MQRead() / Ro;
-	return pow(10.0, ((log(rs_ro_ratio) - 0.72) / -0.34) + 2.3);
+	return this->CO;
 }
 
 float MQ2::GetSmoke()
 {
-	if (!CheckCalibration()) return 0.0;
-	float rs_ro_ratio = MQRead() / Ro;
-	return pow(10.0, ((log(rs_ro_ratio) - 0.53) / -0.44) + 2.3);
+	return this->Smoke;
 }
 
 float MQ2::GetRo()
 {
-	return this->Ro;
+	//return this->Ro;
+	return MQCalibration();
 }
