@@ -5,7 +5,10 @@
 * Author : duc
 */
 
+/* F*ck Code
+this is a big bug, it cause the Atmega chip not working
 #pragma GCC diagnostic ignored "-Wwrite-strings"
+*/
 
 #define F_CPU 8000000UL
 
